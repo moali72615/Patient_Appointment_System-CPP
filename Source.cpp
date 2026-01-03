@@ -481,9 +481,41 @@ void userPatient()
                 choice = toupper(choice);
                 if (choice == 'Y')
                 {
+                    int room = 0;
+                    bool roomLoop = true;
+                    while (roomLoop)
+                    {
 
-                    cout << "Enter Room Number You Want to Assign for the Patient between room 20-50" << endl;
-                    cin >> patient[patCounter].room;
+                        cout << "Enter Room Number You Want to Assign for the Patient between room 20-50" << endl;
+                        cin >> room;
+                        if (room < 20 || room>50)
+                        {
+                            cout << "\n\tInvalid Room Number Entered...Enter From 20 to 50\n" << endl;
+                            continue;
+
+                        }
+                        bool roomTaken = false;
+                        for (int i = 0; i < patCounter; i++)
+                        {
+                            if (patient[i].room == room)
+                            {
+                                roomTaken = true;
+                                break;
+                            }
+                        }
+                        if (roomTaken)
+                        {
+                            cout << "\n\n\t\t***The Room is Already Taken***\n\t\tPlease Enter Different Room Number" << endl;
+                        }
+                        else
+                        {
+                            patient[patCounter].room = room;
+                            roomLoop = false;
+                        }
+
+                    }
+
+                    
 
 
                 }
