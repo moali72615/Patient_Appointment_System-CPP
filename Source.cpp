@@ -509,16 +509,18 @@ void userPatient()
                         }
                         else
                         {
+
                             patient[patCounter].room = room;
+
                             roomLoop = false;
                         }
+
 
                     }
 
                     
-
-
                 }
+                
                 patCounter++;
                 
                 cout << "Press any key to continue" << endl;
@@ -526,8 +528,6 @@ void userPatient()
             }
 
             
-
-        
 
     }
 
@@ -586,20 +586,34 @@ void admViewsearch()
 
 void admViewpatlist()
 {
-    bool admViewlistloop = true;
-    while (admViewlistloop)
+    cout << "\n\n\t\t***View Patient List***" << endl;
+    cout << "\n\tPatient ID\tPatient Name\tPatient Age\tRoom Number" << endl;
+    if (patCounter == 0)
     {
-        cout << "\n\n\t\t***View Patient List***" << endl;
-        cout << "\n\tPatient ID\tPatient Name\tPatient Age\tRoom Number"<<endl;
+        cout << "\n\n\t\t***No Patients***" << endl;
+    }
+    else
+    {
         for (int i = 0; i < patCounter; i++)
         {
             cout << "\t" << patient[i].id;
             cout << "\t\t" << patient[i].name;
             cout << "\t\t" << patient[i].age;
-            cout << "\t\t" << patient[i].room << endl;
+            if (patient[i].room == 0)
+            {
+                cout << "\t\tNot in Room" << endl;
+            }
+            else 
+            {
+                cout << "\t\t" << patient[i].room<<endl;
+            }
         }
-        break;
     }
+
+
+    cout << "\n\t\tPress Key to COntinue" << endl;
+    _getch();
+
 }
 
 void userAppbook()
