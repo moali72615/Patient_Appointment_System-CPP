@@ -1,27 +1,29 @@
 #include <iostream>
 #include <string>
-#include <conio.h>
+#include <conio.h>                  //FOR _getch();
 
 
 using namespace std;
 void menu();
 void admin();
-void admpatManage();           //in admin main menu
+void admpatManage();           //in main admin main menu
 void user();
-void admApp();               //in admin main menu
-void admViewpat();           //in admin main menu
-void userApp();              //in User main menu
-void userDoc();            //in User main menu
-void userPatient();       //in User main menu
+void admApp();               //in main admin main menu
+void admViewpat();           //in main admin main menu
+void userApp();              //in main User main menu
+void userDoc();            //in main User main menu
+void userPatient();       //in main User main menu
 
 void admPatadd();
 void admPatedit();
+int searchpat(int);          //***PATIENT SEARCHING FUNTION, IT RETURNS INT , RETURNS THE INDEX ON WHICH IT IS STORED*** 
 void admPatdel();
 void admAppcreate();
 void admAppdel();
+
 void admViewsearch();
 void admViewpatlist();
-void userAppreschedule();
+void userAppolist();
 void userDocavailable();
 void userDocroom();
 void userPatroom();
@@ -44,17 +46,61 @@ struct Patient
                 
                 cout << "Enter Age :";
                 cin >> age;
-                
-
         }
 };
+
 struct Doctor
 {
     int id;
+    string docName;
 };
+
+struct Date
+{
+    int day;
+    int month;
+    int year;
+    void input()
+    {
+        cout << "Enter Day :";
+        cin >> day;
+        cout << "Enter The Month :";
+        cin >> month;
+        cout << "Enter Year :";
+        cin >> year;
+    }
+};
+
+struct Appointment
+{
+    int appId;
+    string docName;
+    Date appointmentDate;
+    void input()
+    {
+    
+        cout << "Enter Name of Doctor for Appointment :";
+        cin.ignore();
+        cin.clear();
+        getline(cin, docName);
+        cout << "\tEnter Date :";
+        appointmentDate.input();
+    }
+
+};
+                //***DATE IS IN SEPARATE BRACKET BECAUSE IT IS AnOTHER Struct***
+
+Appointment appointments[15] = { {101,"Dr. Huzaifa",{20,1,2026}},{102,"Dr. Imran Khan",{22,1,2026}} };
+int appoCount = 2;
+int appoID = 102;
+
+                  //***ID--NAME---AGE--ROOM  of Patient***
+                                                                
 Patient patient[15] = { {11,"M Ali",19,24},{12,"Mustafa",17,31},{13,"Fahad",18,32} };
 int patId = 13;
-int patCounter = 3;
+int patCounter = 3;     //Total Patients in Data
+
+
 
 int main()
 {
@@ -65,15 +111,16 @@ int main()
 void menu()
 {
 
-    bool mainMenuloop = true;
+    bool mainMenu_loop = true;
     char choice = 0;
 
 
-    while (mainMenuloop)
+    while (mainMenu_loop)
     {
         cout << "\n\n\t\tChoose Your Status\n" << endl;
         cout << "\t\tPress 1 for Admin" << endl;
         cout << "\t\tPress 2 for User" << endl;
+        cout << "\t\tPress 3 To Exit" << endl;
         cin >> choice;
 
         if (isdigit(choice))
@@ -88,6 +135,8 @@ void menu()
                 user();
                 break;
 
+            case '3':
+                exit(1);
             default:
                 cout << "\n\n\t\t*** Invalid Choice Entered...Please Try Again and Enter 1 for Admin OR 2 for User***\n" << endl;
                 break;
@@ -103,10 +152,10 @@ void menu()
 }
 void admin()
 {
-    bool adminMenuloop = true;
+    bool adminMenu_loop = true;
     
     char adminAppointments = 0;
-    while (adminMenuloop)
+    while (adminMenu_loop)
     {
         string userName;
         string passWord;
@@ -120,7 +169,7 @@ void admin()
 
         if (userName == "B" || userName == "b")
         {
-            adminMenuloop = false;
+            adminMenu_loop = false;
             break;
         }
 
@@ -131,8 +180,8 @@ void admin()
         {
             cout << "\n\t\t***Login Successful***" << endl;
 
-            bool loggedInadminloop = true;
-            while (loggedInadminloop)
+            bool loggedInadmin_loop = true;
+            while (loggedInadmin_loop)
             {
                 cout << "\n\n\t\tPress 1 for Patient Management\n\t\tPress 2 for Appointments\n\t\tPress 3 to View Patients\n\t\tPress 4 to go back / log out" << endl;
 
@@ -159,8 +208,7 @@ void admin()
 
                     case '4':
                         cout << "\n\n\t\t***Going Back to Main Menu***" << endl;
-                        loggedInadminloop = false;          // exiting while loop going back to main menu when while(loggedInadmin) gets false
-                        adminMenuloop = false;
+                        return;
                         break;
 
                     default:
@@ -186,8 +234,8 @@ void admin()
 void user()
 {
     
-    bool userMenuloop = true;
-    while (userMenuloop)
+    bool userMenu_loop = true;
+    while (userMenu_loop)
     {
         cout << "\n\n\t\t***User Menu***\n";
         cout << "\n\t\tPress 1 for Appointments\n\t\tPress 2 to View Available Doctors\n\t\tPress 3 for Patients\n\t\tPress 4 to go Back to Main Menu\n";
@@ -210,7 +258,7 @@ void user()
                 break;
             case '4':
                 cout << "\n\n\t\t***Going Back to Main Menu***" << endl;
-                userMenuloop = false;                      //To go back, Exits while(userMenu) when it gets false
+                return;
                 break;
             default:
                 cout << "\n\n\t\t***Invalid Choice Entered***\n\t\tPlease Try Again" << endl;
@@ -228,8 +276,8 @@ void user()
 }
 void admpatManage()
 {
-    bool adminPatmanageloop = true;
-    while (adminPatmanageloop)
+    bool adminPatmanage_loop = true;
+    while (adminPatmanage_loop)
     {
         char adminpatMan = 0;
         cout << "\n\n\t\t***Patient Management***" << endl;
@@ -251,8 +299,9 @@ void admpatManage()
                 break;
             case '4':
                 cout << "\n\n\t\t***Going Back***" << endl;
-                adminPatmanageloop = false;
+                adminPatmanage_loop = false;
                 break;
+                
             default:
                 cout << "Invalid Selection" << endl;
                 break;
@@ -269,8 +318,8 @@ void admpatManage()
 
 void admApp()
 {
-    bool adminApploop = true;
-    while (adminApploop)
+    bool adminApp_loop = true;
+    while (adminApp_loop)
     {
 
         char adminAppointments = 0;
@@ -290,7 +339,7 @@ void admApp()
                 break;
             case '3':
                 cout << "\n\n\t\t***Going Back***" << endl;
-                adminApploop = false;
+                adminApp_loop = false;
                 break;
             default:
                 cout << "Invalid Selection" << endl;
@@ -310,10 +359,10 @@ void admApp()
 
 void admViewpat()
 {
-    bool adminViewloop = true;
+    bool adminView_loop = true;
     
     
-    while (adminViewloop)
+    while (adminView_loop)
     {
         char adminView = 0;
         cout << "\n\n\t\t***View Patients***" << endl;
@@ -332,7 +381,7 @@ void admViewpat()
 
             case '3':
                 cout << "\n\n\t\t***GO BACK***" << endl;
-                adminViewloop = false;
+                adminView_loop = false;
                 
 
                 break;
@@ -353,12 +402,12 @@ void admViewpat()
 }
 void userApp()
 {
-    bool userAppointmentloop = true;
-    while (userAppointmentloop)
+    bool userAppointment_loop = true;
+    while (userAppointment_loop)
     {
         cout << "\n\n\t\t***User Appointments***" << endl;
         char userAppointment = 0;
-        cout << "\n\n\t\tPress 1 to Book Appointment\n\t\tPress 2 to Request of Another time for already booked Appointment ( Reschecudle )\n\t\tPress 3 to go back" << endl;
+        cout << "\n\n\t\tPress 1 to Book Appointment\n\t\tPress 2 to View My Appointments by ID\n\t\tPress 3 to go back" << endl;
         cin >> userAppointment;
         if (isdigit(userAppointment))
         {
@@ -369,12 +418,12 @@ void userApp()
                 break;
 
             case '2':
-                userAppreschedule();
+                userAppolist();
                 break;
 
             case '3':
                 cout << "\n\n\t\t***Go Back***" << endl;
-                userAppointmentloop = false;
+                userAppointment_loop = false;
                 break;
             }
         
@@ -390,8 +439,8 @@ void userApp()
 
 void userDoc()
 {
-    bool userDoctorsloop = true;
-    while (userDoctorsloop)
+    bool userDoctors_loop = true;
+    while (userDoctors_loop)
     {
         cout << "\n\n\t\t***User Doctors***" << endl;
         char userDoctors = 0;
@@ -409,7 +458,7 @@ void userDoc()
                 break;
             case '3':
                 cout << "\n\n\t\t***Go Back***" << endl;
-                userDoctorsloop = false;
+                userDoctors_loop = false;
                 break;
             }
 
@@ -426,8 +475,8 @@ void userDoc()
 
 void userPatient()
 {
-    bool userPatientloop = true;
-    while (userPatientloop)
+    bool userPatient_loop = true;
+    while (userPatient_loop)
     {
         cout << "\n\n\t\t***User Patients***" << endl;
         char userPatients = 0;
@@ -445,7 +494,7 @@ void userPatient()
                 break;
             case '3':
                 cout << "\n\n\t\t***Go Back***" << endl;
-                userPatientloop = false;
+                userPatient_loop = false;
                 break;
             }
 
@@ -533,10 +582,72 @@ void userPatient()
 
     void admPatdel()
     {
-        bool adminPatdelloop = true;
-        while (adminPatdelloop)
+        int pat_ID;
+        bool adminPatdel_loop = true;
+        int index;
+        char ch;
+        while (adminPatdel_loop)
         {
             cout << "\n\n\t\t***Delete Patient***" << endl;
+            cout << "\n\n\t\tEnter ID of The Patient You Want to Delete\n\t\tEnter 0 to Exit :";
+            cin >> pat_ID;
+            if (pat_ID == 0)
+            {
+                return;
+            }
+            index = searchpat(pat_ID);
+            if (index == -1)
+            {
+                cout << "Not Found" << endl;
+                cout << "Press any KEY" << endl;
+                _getch();
+            }
+            else
+            {
+                cout << "Patient ID :" << patient[index].id << endl;
+                cout << "Patient Name :" << patient[index].name << endl;
+                cout << "Patient Age :" << patient[index].age << endl;
+                cout << "Patient Room :" << patient[index].room << endl;
+                while (true)
+                {
+                    cout << "\n\n\t\t***DO YOU WANT TO DELETE DATA OF THIS PATIENT?***\n\tPress Y for Yes\n\tPress N for No (GO BACK)" << endl;
+                    cin >> ch;
+                    ch = toupper(ch);
+                    if (isdigit(ch))
+                    {
+                        cout << "\n\n\t\tPlease Enter a Character...Try Again" << endl;
+                        continue;
+                    }
+                    else if (ch == 'Y')
+                    {
+
+                        for (int i = index; i < patCounter - 1; i++)
+                        {
+                            patient[i] = patient[i + 1];
+                        }
+                        patCounter--;
+                        cout << "\n\n\t\t***Patient Deleted Successfully***" << endl;
+                        cout << "\n\tPress any key to continue..." << endl;
+                        _getch();
+                        return;
+
+
+                    }
+                    else if (ch == 'N')
+                    {
+                        cout << "No";
+                        return;
+                    }
+                    else
+                    {
+                        cout << "\n\n\t\tWrong Choice Entered...Try Again" << endl;
+                        continue;
+                    }
+
+                }
+
+            }
+
 
 
             break;
@@ -545,41 +656,168 @@ void userPatient()
 
     void admPatedit()
     {
-        bool adminPateditloop = true;
-        while (adminPateditloop)
+        int index;
+        bool adminPatedit_loop = true;
+        int pat_ID;
+        char choice;
+        int newAge;
+        int newRoom;
+        string newName;
+
+        while (adminPatedit_loop)
         {
             cout << "\n\n\t\t***Edit Patient***" << endl;
+            cout << "\n\t\tEnter The ID of Patient You want to Edit\n\t\tEnter 0 to Exit :";
+            cin >> pat_ID;
+                if (pat_ID == 0)
+                {
+                    return;
+                }
+
+                index = searchpat(pat_ID);
+                if (index == -1)
+                {
+                    cout << "Not Found" << endl;
+                    cout << "Press any KEY" << endl;
+                    _getch();
+                }
+                else
+                {
+                    cout << "Patient ID :" << patient[index].id << endl;
+                    cout << "Patient Name :" << patient[index].name << endl;
+                    cout << "Patient Age :" << patient[index].age << endl;
+                    cout << "Patient Room :" << patient[index].room << endl;
+                    while (true)
+                    {
+                        cout << "\n\n\t\tPress 1 to Edit Age\n\t\tPress 2 to Edit Room\n\t\tPress 3 to Edit Name\n\t\tPress 4 to Go Back" << endl;
+                        cin >> choice;
+                        if (isdigit(choice))
+                        {
+                            switch (choice)
+                            {
+                            case '1':
+                                cout << "\n\n\t\tEnter New Age :";
+                                cin >> newAge;
+                                patient[index].age = newAge;
+                                cout << "\n\t\t***Successfully Edited Age***\nPress Any Kew to Continue" << endl;
+                                _getch();
+                                break;
+
+                            case '2':
+                                cout << "\n\n\t\tEnter New Room Number :";
+                                cin >> newRoom;
+                                patient[index].room = newRoom;
+                                cout << "\n\t\t***Successfully Edited Room Number***\nPress Any Kew to Continue" << endl;
+                                _getch();
+                                break;
+
+                            case '3':
+                                cout << "\n\n\t\tEnter New Name :";
+                                cin.ignore();
+                                cin.clear();
+                                getline(cin, newName);
+                                patient[index].name = newName;
+                                cout << "\n\t\t***Successfully Edited Patient Name***\nPress Any Kew to Continue" << endl;
+                                _getch();
+                                break;
+
+                            case '4':
+                                cout << "\n\n\t\t***Going Back***" << endl;
+                                return;
+                            default:
+                                cout << "Invalid Choice Entered...Press Any Key to Try Again" << endl;
+                                break;
+
+                            }
+                        }
+                        else
+                        {
+                            cout << "Character Entered... Please Enter Valid Choice" << endl;
+                            continue;
+
+                        }
+                    }
+                }
+            
+            
+            
             break;
         }
     }
 
+    int searchpat(int findPatid)
+    {
+        for (int i = 0; i < patCounter; i++)
+        {
+            if (patient[i].id == findPatid)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 void admAppcreate()
 {
-    bool adminAppcreateloop = true;
-    while (adminAppcreateloop)
+    cout << "\n\n\t\t***Create Appointment***" << endl;
+    if (appoCount >= 15)
     {
-        cout << "\n\n\t\t***Create Appointment***" << endl;
-        break;
+        cout << "***THE APPOINTMENTS ARE FULL***" << endl;
+        return;
     }
-   
+    else
+    {
+        appoID++;
+        appointments[appoCount].appId = appoID;
+
+        appointments[appoCount].input();
+        appoCount++;
+        cout << "\n\tPress any key to continue..." << endl;
+        _getch();
+    }
 }
 
 void admAppdel()
 {
-    bool adminAppdelloop = true;
-    while (adminAppdelloop)
+    bool adminAppdel_loop = true;
+    while (adminAppdel_loop)
     {
         cout << "\n\n\t\t***Delete Appointment***" << endl;
         break;
     }
 }
 
+
 void admViewsearch()
 {
-    bool adminViewsearchloop = true;
-    while (adminViewsearchloop)
+    int pat_ID;
+    int index;
+    bool adminViewsearch_loop = true;
+    while (adminViewsearch_loop)
     {
         cout << "\n\n\t\t***Search Patients By ID***" << endl;
+        cout << "\n\tEnter The ID of Patient :";
+        cin >> pat_ID;
+        if (pat_ID == 0)
+        {
+            return;
+        }
+        index = searchpat(pat_ID);
+        if (index == -1)
+        {
+            cout << "\n\n\t\tNot found\n\t\tPress Any Key to Continue" << endl;
+            _getch();
+         
+        }
+        else
+        {
+            cout << "\n\t\tPatient ID :" << patient[index].id << endl;
+            cout << "\n\tPatient Name\t:" << patient[index].name << endl;
+            cout << "\tPatient Age\t:" << patient[index].age << endl;
+            cout << "\tPatient Room\t:" << patient[index].room << endl;
+            cout << "\n\tPress any key to continue" << endl;
+            _getch();
+        }
         break;
     }
 }
@@ -618,23 +856,19 @@ void admViewpatlist()
 
 void userAppbook()
 {
-    bool userAppbookloop = true;
-    while (userAppbookloop)
+    bool userAppbook_loop = true;
+    while (userAppbook_loop)
     {
         cout << "\n\n\t\t***Book Appointments***" << endl;
         break;
     }
 }
 
-void userAppreschedule()
+void userAppolist()
 {
-    bool userAppresc_loop = true;
-    while (userAppresc_loop)
-    {
-        cout<<"\n\n\t\t***Reschecudle***" << endl;
-        break;
-    }
+
 }
+
 
 void userDocavailable()
 {
