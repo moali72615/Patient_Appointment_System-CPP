@@ -17,13 +17,14 @@ void userPatient();       //in main User main menu
 void admPatadd();
 void admPatedit();
 int searchpat(int);          //***PATIENT SEARCHING FUNTION, IT RETURNS INT , RETURNS THE INDEX ON WHICH IT IS STORED*** 
+int searchAppo(int);
 void admPatdel();
 void admAppcreate();
 void admAppdel();
 
 void admViewsearch();
 void admViewpatlist();
-void userAppolist();
+void userApposearch();
 void userDocavailable();
 void userDocroom();
 void userPatroom();
@@ -73,24 +74,25 @@ struct Date
 
 struct Appointment
 {
+    
     int appId;
+    int patientID;
     string docName;
     Date appointmentDate;
     void input()
     {
-    
         cout << "Enter Name of Doctor for Appointment :";
         cin.ignore();
         cin.clear();
         getline(cin, docName);
-        cout << "\tEnter Date :";
+        cout << "\tEnter Date :\n";
         appointmentDate.input();
     }
 
 };
                 //***DATE IS IN SEPARATE BRACKET BECAUSE IT IS AnOTHER Struct***
 
-Appointment appointments[15] = { {101,"Dr. Huzaifa",{20,1,2026}},{102,"Dr. Imran Khan",{22,1,2026}} };
+Appointment appointments[15] = { {101,11,"Dr. Huzaifa",{20,1,2026}},{102,12,"Dr. Imran Khan",{22,1,2026}} };
 int appoCount = 2;
 int appoID = 102;
 
@@ -418,12 +420,15 @@ void userApp()
                 break;
 
             case '2':
-                userAppolist();
+                userApposearch();
                 break;
 
             case '3':
                 cout << "\n\n\t\t***Go Back***" << endl;
                 userAppointment_loop = false;
+                break;
+            default:
+                cout << "\n\n\t\tInvalid Selection...Please Try Again" << endl;
                 break;
             }
         
@@ -460,6 +465,9 @@ void userDoc()
                 cout << "\n\n\t\t***Go Back***" << endl;
                 userDoctors_loop = false;
                 break;
+            default:
+                cout << "\n\n\t\tInvalid Selection...Please Try Again" << endl;
+                break;
             }
 
 
@@ -495,6 +503,9 @@ void userPatient()
             case '3':
                 cout << "\n\n\t\t***Go Back***" << endl;
                 userPatient_loop = false;
+                break;
+            default:
+                cout << "\n\n\t\tInvalid Selection...Please Try Again" << endl;
                 break;
             }
 
@@ -757,24 +768,93 @@ void userPatient()
         return -1;
     }
 
+
+    int searchAppo(int appId)
+    {
+        for (int i = 0; i < appoCount; i++)
+        {
+            if (appointments[i].appId == appId)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
 void admAppcreate()
 {
+    int patidEntered = 0;
+    char choice;
+    int index;
     cout << "\n\n\t\t***Create Appointment***" << endl;
-    if (appoCount >= 15)
+    cout << "\n\n\t***You Have To Add Patient Before Creating Appointment***" << endl;
+    cout << "\n\t\tIf Patient is already added press Y to continue\n\t\tPress N to Add Patient" << endl;
+    cin >> choice;
+    choice = toupper(choice);
+    if (choice=='N')
     {
-        cout << "***THE APPOINTMENTS ARE FULL***" << endl;
-        return;
+        admPatadd();
+        
     }
-    else
+    else if (choice == 'Y')
     {
-        appoID++;
-        appointments[appoCount].appId = appoID;
+        if (appoCount >= 15)
+        {
+            cout << "***THE APPOINTMENTS ARE FULL***" << endl;
+            return;
+        }
+        else
+        {
+            cout << "\n\n\t\t***LIST OF ALL ADDED PATIENTS***" << endl;
+            cout << "\n\tPatient ID\tPatient Name\tPatient Age\tRoom Number" << endl;
+            if (patCounter == 0)
+            {
+                cout << "\n\n\t\t***No Patients***" << endl;
+            }
+            else
+            {
+                for (int i = 0; i < patCounter; i++)
+                {
+                    cout << "\t" << patient[i].id;
+                    cout << "\t\t" << patient[i].name;
+                    cout << "\t\t" << patient[i].age;
+                    if (patient[i].room == 0)
+                    {
+                        cout << "\t\tNot in Room" << endl;
+                    }
+                    else
+                    {
+                        cout << "\t\t" << patient[i].room << endl;
+                    }
+                }
+            }
+            
+            cout << "\n\n\tEnter the ID of patient you want to create appointment for :";
+            cin >> patidEntered;
+            index = searchpat(patidEntered);                                        // search id function returns on which index of the array the id is present............
+            if (index == -1)                    //returns -1 if the id is not found in the array............
+            {
+                cout << "\n\n\tNo patient Found with the ID you Entered :" << patidEntered << endl;
+                cout << "Press Any Key to Continue..." << endl;
+                _getch();
+                return;
+            }
 
-        appointments[appoCount].input();
-        appoCount++;
-        cout << "\n\tPress any key to continue..." << endl;
-        _getch();
+            appoID++;
+            appointments[appoCount].appId = appoID;
+            appointments[appoCount].patientID = patidEntered;
+            appointments[appoCount].input();
+            appoCount++;
+
+            cout << "\n\n\tThe Appointment of Patient ID: " << patidEntered << " was created SuccessfuLly" << endl;
+            cout << "\tThe Appointment ID is :" << appoID << endl;
+
+            cout << "\n\tPress any key to continue..." << endl;
+            _getch();
+        }
     }
+    
 }
 
 void admAppdel()
@@ -796,7 +876,7 @@ void admViewsearch()
     while (adminViewsearch_loop)
     {
         cout << "\n\n\t\t***Search Patients By ID***" << endl;
-        cout << "\n\tEnter The ID of Patient :";
+        cout << "\n\tEnter The ID of Patient\n\tEnter 0 to Go Back :";
         cin >> pat_ID;
         if (pat_ID == 0)
         {
@@ -814,7 +894,15 @@ void admViewsearch()
             cout << "\n\t\tPatient ID :" << patient[index].id << endl;
             cout << "\n\tPatient Name\t:" << patient[index].name << endl;
             cout << "\tPatient Age\t:" << patient[index].age << endl;
-            cout << "\tPatient Room\t:" << patient[index].room << endl;
+            if (patient[index].room == 0)
+            {
+                cout << "\tPatient Room\t:Not in Room" << endl;
+            }
+            else
+            {
+                cout << "\tPatient Room\t:" << patient[index].room << endl;
+            }
+            
             cout << "\n\tPress any key to continue" << endl;
             _getch();
         }
@@ -825,7 +913,7 @@ void admViewsearch()
 void admViewpatlist()
 {
     cout << "\n\n\t\t***View Patient List***" << endl;
-    cout << "\n\tPatient ID\tPatient Name\tPatient Age\tRoom Number" << endl;
+    cout << "\n\t\tPatient ID\t*||*\tPatient Name\t*||*\tPatient Age\t*||*\tRoom Number" << endl;
     if (patCounter == 0)
     {
         cout << "\n\n\t\t***No Patients***" << endl;
@@ -834,16 +922,16 @@ void admViewpatlist()
     {
         for (int i = 0; i < patCounter; i++)
         {
-            cout << "\t" << patient[i].id;
+            cout << "\t\t\t" << patient[i].id;
             cout << "\t\t" << patient[i].name;
-            cout << "\t\t" << patient[i].age;
+            cout << "\t\t\t" << patient[i].age;
             if (patient[i].room == 0)
             {
                 cout << "\t\tNot in Room" << endl;
             }
             else 
             {
-                cout << "\t\t" << patient[i].room<<endl;
+                cout << "\t\t\t" << patient[i].room<<endl;
             }
         }
     }
@@ -864,8 +952,45 @@ void userAppbook()
     }
 }
 
-void userAppolist()
+void userApposearch()
 {
+    int appID;
+    int index;
+    bool userApposearch_loop = true;
+    while (userApposearch_loop)
+    {
+        cout << "\n\n\t\t***View Appointments By ID***" << endl;
+        cout << "\n\n\tEnter Your Appointment ID to View Appointment\n\tEnter 0 to go Back :";
+        cin >> appID;
+        
+        if (appID == 0)
+        {
+            return;
+        }
+        index = searchAppo(appID);
+        if (index == -1)
+        {
+            cout << "\n\n\t\tNot found\n\t\tPress Any Key to Continue" << endl;
+            _getch();
+        }
+        else
+        {
+
+            cout << "\n\tAppointment ID :" << appointments[index].appId << endl;
+            cout << "\tDoctor Name :" << appointments[index].docName << endl;
+            cout << "\tDate :";
+            cout << "\n\t" << appointments[index].appointmentDate.day;
+            cout << "\t/\t" << appointments[index].appointmentDate.month ;
+            cout << "\t/\t" << appointments[index].appointmentDate.year << endl;
+                
+            cout << "\n\tPress any key to continue" << endl;
+            _getch();
+
+
+        }
+
+        break;
+    }
 
 }
 
