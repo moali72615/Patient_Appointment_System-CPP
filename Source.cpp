@@ -18,6 +18,8 @@ void admPatadd();
 void admPatedit();
 int searchpat(int);          //***PATIENT SEARCHING FUNTION, IT RETURNS INT , RETURNS THE INDEX ON WHICH IT IS STORED*** 
 int searchAppo(int);
+int searchDoc(int);
+int searchReport(int);
 void admPatdel();
 void admAppcreate();
 void admAppdel();
@@ -54,6 +56,7 @@ struct Doctor
 {
     int id;
     string docName;
+    int room;
 };
 
 struct Date
@@ -90,6 +93,19 @@ struct Appointment
     }
 
 };
+
+struct Report
+{
+    int patID;
+    string patReport;
+    void display()
+    {
+        cout << "\n\n\t***PATIENT REPORT***" << endl;
+        cout << "\n\tPatient ID :" << patID;
+        cout << "\n\tReport :" << patReport << endl;
+    }
+};
+
                 //***DATE IS IN SEPARATE BRACKET BECAUSE IT IS AnOTHER Struct***
 
 Appointment appointments[15] = { {101,11,"Dr. Huzaifa",{20,1,2026}},{102,12,"Dr. Imran Khan",{22,1,2026}} };
@@ -101,6 +117,13 @@ int appoID = 102;
 Patient patient[15] = { {11,"M Ali",19,24},{12,"Mustafa",17,31},{13,"Fahad",18,32} };
 int patId = 13;
 int patCounter = 3;     //Total Patients in Data
+
+Doctor doctors[15] = { {11,"Dr. Huzaifa",6},{12,"Dr. Imran Khan",11},{13,"Dr. Fahad",2},{14,"Dr. Hamza",43},{15,"Dr. Ali",71},{16,"Dr. Haris",57},{17,"Dr. Saad",26} };
+int docId = 17;
+int docCount = 7;
+
+Report reports[15] = { {11,"The Patient is stable. He has Fever and Dehydration"},{12,"The Patient is under supervision in the ICU, He has been diagnose with Kidney Disease"},{13,"The Patient is very dehydrated and will be kept in the hospital for 3 days"} };
+int repCounter = 3;
 
 
 
@@ -781,6 +804,31 @@ void userPatient()
         return -1;
     }
 
+    int searchDoc(int docID)
+    {
+        for (int i = 0; i < docCount; i++)
+        {
+            if (doctors[i].id == docID)
+            {
+                return i;
+            }
+        }
+        return -1;
+
+    }
+
+    int searchReport(int patId)
+    {
+        for (int i = 0; i < repCounter; i++)
+        {
+            if (reports[i].patID == patId)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
 void admAppcreate()
 {
@@ -860,10 +908,78 @@ void admAppcreate()
 void admAppdel()
 {
     bool adminAppdel_loop = true;
+    int app_ID;
+    int appIndex;
+    char ch;
     while (adminAppdel_loop)
     {
         cout << "\n\n\t\t***Delete Appointment***" << endl;
+        cout << "\n\n\t\tEnter The Appointment ID of Appointment you Want to Delete\n\n\tEnter 0 if you want to go Back :";
+        cin >> app_ID;
+        if (app_ID == 0)
+        {
+            return;
+        }
+        appIndex = searchAppo(app_ID);
+            if (appIndex==-1)
+            {
+                cout << "\n\n\tNot Found\n\tNo Appointment of ID :" << app_ID << endl;
+                cout << "Press Any Key to Exit...." << endl;
+                _getch();
+            }
+            else
+            {
+                cout << "Appointment ID :" << appointments[appIndex].appId << endl;
+                cout << "Patient ID :" << appointments[appIndex].patientID << endl;
+                cout << "Doctor Name :" << appointments[appIndex].docName << endl;
+                cout << "Appointment Date :\n\t" << endl;
+                cout << "\n\t" << appointments[appIndex].appointmentDate.day;
+                cout << "\t/\t" << appointments[appIndex].appointmentDate.month;
+                cout << "\t/\t" << appointments[appIndex].appointmentDate.year << endl;
+                
+                while (true)
+                {
+                    cout << "\n\n\t****DO YOU REALLY WANT TO DELETE THIS APPOINTMENT***" << endl;
+                    cout << "\tPress Y to Delete\n\tPress N to GO BACK" << endl;
+                    cin >> ch;
+                    ch = toupper(ch);
+                    if (isdigit(ch))
+                    {
+                        cout << "\n\n\t\tInvalid Selectionm....Please Enter a character Y for Yes or N for NO" << endl;
+                        continue;
+                    }
+                    else if (ch == 'Y')
+                    {
+                        for (int i = appIndex; i < appoCount - 1; i++)
+                        {
+                            appointments[i] = appointments[i + 1];
+
+
+                        }
+                        appoCount--;
+                        cout << "\n\n\t\tAppointment has been Deleted Successfully" << endl;
+                        cout << "\n\tPress ANy Key to Continue" << endl;
+                        _getch();
+                        return;
+
+                    }
+                    else if (ch=='N')
+                    {
+                        cout << "\n\n\t\tGoing back" << endl;
+                        return;
+                    }
+                    else
+                    {
+                        cout << "\n\n\t\tInvalid Choice...Try Again\n";
+                        continue;
+                    }
+                }
+
+            }
+        
+        
         break;
+
     }
 }
 
@@ -1001,37 +1117,138 @@ void userDocavailable()
     while (userDocAvail_loop)
     {
         cout << "\n\n\t\t***See all Available Doctors***" << endl;
+        cout << "\n\t\t\tALL DOCTORS" << endl;
+        cout << "\n\tDOCTOR ID\t***|***\t\tDOCTOR NAME\n" << endl;
+        for (int i = 0; i < docCount; i++)
+        {
+            cout << "\t\t" << doctors[i].id;
+            cout <<"\t\t\t" << doctors[i].docName << endl;
+        }
+        
         break;
     }
+    cout << "\n\tPress Any Key to Continue......." << endl;
+    _getch();
 }
 
 void userDocroom()
 {
     bool userDocroom_loop = true;
+    int doc_ID;
+    int index;
     while (userDocroom_loop)
     {
         cout << "\n\n\t\t***See a Doctor's Room Number***" << endl;
+        cout << "\n\n\tEnter The ID of Doctor You want to Find Room Number of\n\tEnter 0 TO GO BACK :";
+        cin >> doc_ID;
+        if (doc_ID == 0)
+        {
+            return;
+        }
+        index = searchDoc(doc_ID);
+        if (index == -1)
+        {
+            cout << "\n\tNO DOCTOR OF ID YOU ENTERED :" << doc_ID;
+            cout << "Press Any Key to Continue..." << endl;
+            _getch();
+        }
+        else
+        {
+            cout << "\n\n\tDoctor ID you Entered : " << doc_ID << "\n\tRoom Number :" << doctors[index].room << endl;
+            cout << "\n\tPress Any Key to Continue...." << endl;
+            _getch();
+        }
+
+
         break;
     }
 }
 
 void userPatroom()
 {
-    bool userPatroom_loop = true;
-    while (userPatroom_loop)
+    int index;
+    int pat_ID;
+    cout << "\n\n\t\t***Find Patient's Room Number***" << endl;
+    cout << "\n\tEnter Patient ID (0 to go back): ";
+    cin >> pat_ID;
+
+    if (pat_ID == 0)
     {
-        cout << "\n\n\t\t***Find Patients Room Number" << endl;
-        break;
+        return;
     }
+    index = searchpat(pat_ID);
+    if (index == -1)
+    {
+        cout << "\n\tNo patient found with ID: " << pat_ID << endl;
+    }
+    else
+    {
+        cout << "\n\tPatient Name: " << patient[index].name;
+
+        if (patient[index].room == 0)
+        {
+            cout << "\n\tRoom: Not Admitted" << endl;
+        }
+        else
+        {
+            cout << "\n\tRoom Number: " << patient[index].room << endl;
+        }
+    }
+
+    cout << "\n\tPress any key to continue..." << endl;
+    _getch();
+
 }
 
 void userPatreport()
 {
-    bool userPatreport_loop = true;
-    while (userPatreport_loop)
+    int index;
+    int pat_ID;
+    int repIndex;
+    cout << "\n\n\t\t***View Patient Report***" << endl;
+    cout << "\n\tEnter the ID of patient to see Report\n\tEnter 0 to GO BACK" << endl;
+    cin >> pat_ID;
+    if (pat_ID == 0)
     {
-        cout << "\n\n\t\t***See your Patients Report***" << endl;
-        break;
+        return;
     }
+    index = searchpat(pat_ID);
+    if (index == -1)
+    {
+        cout << "\n\tNO PATIENT FOUND WITH ID :" << pat_ID << endl;
+        cout << "\n\tPress Any Key to Continue" << endl;
+        _getch();
+        return;
+    }
+
+
+    cout << "\n\t\tPATIENT INFO";
+    cout << "\n\tPatient ID \t\t: " << patient[index].id;
+    cout << "\n\tName \t\t\t: " << patient[index].name;
+    cout << "\n\tAge \t\t\t: " << patient[index].age;
+    if (patient[index].room == 0)
+    {
+        cout << "\n\tRoom \t\t\t: Not in Room";
+    }
+    else
+        cout << "\n\tRoom \t\t\t: " << patient[index].room;
+    repIndex = searchReport(pat_ID);
+    if (repIndex == -1)
+    {
+        cout << "\n\tNo Report Found for this Patient" << endl;
+        cout << "\n\tPress Any key..." << endl;
+        _getch();
+    }
+    else
+    {
+        reports[repIndex].display();
+    }
+    cout << "\n\tPress Any key..." << endl;
+    _getch();
+
+
+
+
+
 }
 // hellok
