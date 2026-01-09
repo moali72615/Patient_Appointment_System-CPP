@@ -187,7 +187,7 @@ void admin()
         string corrUsername = "Mohammad Ali", corrPass = "123abc";
 
         cout << "\n\tEnter Your User Name and Password" << endl;
-        cout << "\n\t***Username Should not have spaces***\n\n\tEnter B to go back to Selection Menu\n\n\tUsername :";
+        cout << "\n\t***Username***\n\n\tEnter B to go back to Selection Menu\n\n\tUsername :";
         cin.ignore();
         cin.clear();
         getline(cin, userName);
@@ -880,8 +880,8 @@ void admAppcreate()
             
             cout << "\n\n\tEnter the ID of patient you want to create appointment for :";
             cin >> patidEntered;
-            index = searchpat(patidEntered);                                        // search id function returns on which index of the array the id is present............
-            if (index == -1)                    //returns -1 if the id is not found in the array............
+            index = searchpat(patidEntered);                                        // ***search id function returns on which index of the array the id is present***............
+            if (index == -1)                    //***returns -1 if the id is not found in the array***............
             {
                 cout << "\n\n\tNo patient Found with the ID you Entered :" << patidEntered << endl;
                 cout << "Press Any Key to Continue..." << endl;
@@ -1061,9 +1061,51 @@ void admViewpatlist()
 void userAppbook()
 {
     bool userAppbook_loop = true;
+    char choice;
+    int appo_patId;
+    int index;
     while (userAppbook_loop)
     {
         cout << "\n\n\t\t***Book Appointments***" << endl;
+        cout << "\n\tYou Have to Be registered by the Admin before booking Appointment" << endl;
+        cout << "\n\n\tPress Y to Book If already Added\n\tPress N to Log in as Admin then create patient ID :";
+        cin >> choice;
+        choice = toupper(choice);
+        if (choice == 'N')
+        {
+            admin();
+        }
+        else if (choice == 'Y')
+        {
+            if (appoCount >= 15)
+            {
+                cout << "***The Appointments are Full***" << endl;
+                return;
+            }
+            
+            cout << "\n\n\tEnter Your Patient ID to book Appointment :";
+            cin >> appo_patId;
+            index = searchpat(appo_patId);
+                if (index == -1)
+                {
+                    cout << "\n\n\tNo Patient of this ID You entered :" << appo_patId;
+                    cout << "\n\tPress any key to continue" << endl;
+                    _getch();
+                    return;
+                }
+                appoID++;
+                appointments[appoCount].appId = appoID;
+                appointments[appoCount].patientID = appo_patId;
+                appointments[appoCount].input();
+                appoCount++;
+
+                cout << "The Appointment of Patient ID: " << appo_patId << " was created Successfully" << endl;
+                cout << "The Appointment ID is :" << appoID << endl;
+
+                cout << "\n\tPress Any Key To Contine ...." << endl;
+                _getch();
+        }
+
         break;
     }
 }
@@ -1251,4 +1293,4 @@ void userPatreport()
 
 
 }
-// hellok
+
